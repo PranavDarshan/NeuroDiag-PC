@@ -1,0 +1,917 @@
+(qlora_env) csegpuserver@rvcse:/media/rvcse22/CSERV/medlm$ CUDA_VISIBLE_DEVICES=0,1 ipython
+/usr/local/lib/python3.10/dist-packages/IPython/core/interactiveshell.py:937: UserWarning: Attempting to work in a virtualenv. If you encounter problems, please install IPython inside the virtualenv.
+  warn(
+Python 3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 8.29.0 -- An enhanced Interactive Python. Type '?' for help.
+
+   ...:     max_memory={0: "36GiB", 1: "38GiB"},
+   ...:     local_files_only=True,
+   ...:     trust_remote_code=True,
+   ...:     low_cpu_mem_usage=True,
+   ...: )
+   ...: model.eval()
+   ...:
+   ...: def ask(prompt, system="You are an expert medical AI assistant.", max_new_tokens=500, temperature=0.7, top_p=0.9):
+   ...:     messages = [
+   ...:         {"role": "system", "content": system},
+   ...:         {"role": "user", "content": prompt}
+   ...:     ]
+   ...:     input_ids = tokenizer.apply_chat_template(
+   ...:         messages,
+   ...:         tokenize=True,
+   ...:         add_generation_prompt=True,
+   ...:         return_tensors="pt"
+   ...:     ).to("cuda:1")
+   ...:     with torch.no_grad():
+   ...:         outputs = model.generate(
+   ...:             input_ids,
+   ...:             max_new_tokens=max_new_tokens,
+   ...:             do_sample=True,
+   ...:             temperature=temperature,
+   ...:             top_p=top_p,
+   ...:             repetition_penalty=1.1,
+   ...:             pad_token_id=tokenizer.eos_token_id,
+   ...:             eos_token_id=tokenizer.eos_token_id,
+   ...:         )
+   ...:     generated = outputs[0][input_ids.shape[-1]:]
+   ...:     print(tokenizer.decode(generated, skip_special_tokens=True))
+   ...:
+   ...: print("✅ Ready!")
+
+
+Loading checkpoint shards: 100%|█████████████████████████████████████████████████████████████████████| 30/30 [04:52<00:00,  9.74s/it]
+✅ Ready!
+
+In [2]:
+
+In [2]:
+
+In [2]: ask("Explain diabetic ketoacidosis.")
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+2026-02-28 15:06:32.650474: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-02-28 15:06:32.698543: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-02-28 15:06:32.698583: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-02-28 15:06:32.699970: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-02-28 15:06:32.707365: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-02-28 15:06:34.016696: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+^C---------------------------------------------------------------------------
+KeyboardInterrupt                         Traceback (most recent call last)
+Cell In[2], line 1
+----> 1 ask("Explain diabetic ketoacidosis.")
+
+Cell In[1], line 43, in ask(prompt, system, max_new_tokens, temperature, top_p)
+     36 input_ids = tokenizer.apply_chat_template(
+     37     messages,
+     38     tokenize=True,
+     39     add_generation_prompt=True,
+     40     return_tensors="pt"
+     41 ).to("cuda:1")
+     42 with torch.no_grad():
+---> 43     outputs = model.generate(
+     44         input_ids,
+     45         max_new_tokens=max_new_tokens,
+     46         do_sample=True,
+     47         temperature=temperature,
+     48         top_p=top_p,
+     49         repetition_penalty=1.1,
+     50         pad_token_id=tokenizer.eos_token_id,
+     51         eos_token_id=tokenizer.eos_token_id,
+     52     )
+     53 generated = outputs[0][input_ids.shape[-1]:]
+     54 print(tokenizer.decode(generated, skip_special_tokens=True))
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/utils/_contextlib.py:116, in context_decorator.<locals>.decorate_context(*args, **kwargs)
+    113 @functools.wraps(func)
+    114 def decorate_context(*args, **kwargs):
+    115     with ctx_factory():
+--> 116         return func(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/generation/utils.py:2024, in GenerationMixin.generate(self, inputs, generation_config, logits_processor, stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)
+   2016     input_ids, model_kwargs = self._expand_inputs_for_generation(
+   2017         input_ids=input_ids,
+   2018         expand_size=generation_config.num_return_sequences,
+   2019         is_encoder_decoder=self.config.is_encoder_decoder,
+   2020         **model_kwargs,
+   2021     )
+   2023     # 13. run sample (it degenerates to greedy search when `generation_config.do_sample=False`)
+-> 2024     result = self._sample(
+   2025         input_ids,
+   2026         logits_processor=prepared_logits_processor,
+   2027         logits_warper=prepared_logits_warper,
+   2028         stopping_criteria=prepared_stopping_criteria,
+   2029         generation_config=generation_config,
+   2030         synced_gpus=synced_gpus,
+   2031         streamer=streamer,
+   2032         **model_kwargs,
+   2033     )
+   2035 elif generation_mode in (GenerationMode.BEAM_SAMPLE, GenerationMode.BEAM_SEARCH):
+   2036     # 11. prepare logits warper
+   2037     prepared_logits_warper = (
+   2038         self._get_logits_warper(generation_config, device=input_ids.device)
+   2039         if generation_config.do_sample
+   2040         else None
+   2041     )
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/generation/utils.py:2982, in GenerationMixin._sample(self, input_ids, logits_processor, stopping_criteria, generation_config, synced_gpus, streamer, logits_warper, **model_kwargs)
+   2979 model_inputs.update({"output_hidden_states": output_hidden_states} if output_hidden_states else {})
+   2981 # forward pass to get next token
+-> 2982 outputs = self(**model_inputs, return_dict=True)
+   2984 if synced_gpus and this_peer_finished:
+   2985     continue  # don't waste resources running the code we don't need
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:1189, in LlamaForCausalLM.forward(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, labels, use_cache, output_attentions, output_hidden_states, return_dict, cache_position)
+   1186 return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+   1188 # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
+-> 1189 outputs = self.model(
+   1190     input_ids=input_ids,
+   1191     attention_mask=attention_mask,
+   1192     position_ids=position_ids,
+   1193     past_key_values=past_key_values,
+   1194     inputs_embeds=inputs_embeds,
+   1195     use_cache=use_cache,
+   1196     output_attentions=output_attentions,
+   1197     output_hidden_states=output_hidden_states,
+   1198     return_dict=return_dict,
+   1199     cache_position=cache_position,
+   1200 )
+   1202 hidden_states = outputs[0]
+   1203 if self.config.pretraining_tp > 1:
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:1001, in LlamaModel.forward(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, use_cache, output_attentions, output_hidden_states, return_dict, cache_position)
+    989     layer_outputs = self._gradient_checkpointing_func(
+    990         decoder_layer.__call__,
+    991         hidden_states,
+   (...)
+    998         position_embeddings,
+    999     )
+   1000 else:
+-> 1001     layer_outputs = decoder_layer(
+   1002         hidden_states,
+   1003         attention_mask=causal_mask,
+   1004         position_ids=position_ids,
+   1005         past_key_value=past_key_values,
+   1006         output_attentions=output_attentions,
+   1007         use_cache=use_cache,
+   1008         cache_position=cache_position,
+   1009         position_embeddings=position_embeddings,
+   1010     )
+   1012 hidden_states = layer_outputs[0]
+   1014 if use_cache:
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:734, in LlamaDecoderLayer.forward(self, hidden_states, attention_mask, position_ids, past_key_value, output_attentions, use_cache, cache_position, position_embeddings, **kwargs)
+    731 hidden_states = self.input_layernorm(hidden_states)
+    733 # Self Attention
+--> 734 hidden_states, self_attn_weights, present_key_value = self.self_attn(
+    735     hidden_states=hidden_states,
+    736     attention_mask=attention_mask,
+    737     position_ids=position_ids,
+    738     past_key_value=past_key_value,
+    739     output_attentions=output_attentions,
+    740     use_cache=use_cache,
+    741     cache_position=cache_position,
+    742     position_embeddings=position_embeddings,
+    743     **kwargs,
+    744 )
+    745 hidden_states = residual + hidden_states
+    747 # Fully Connected
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:617, in LlamaSdpaAttention.forward(self, hidden_states, attention_mask, position_ids, past_key_value, output_attentions, use_cache, cache_position, position_embeddings, **kwargs)
+    604     return super().forward(
+    605         hidden_states=hidden_states,
+    606         attention_mask=attention_mask,
+   (...)
+    612         position_embeddings=position_embeddings,
+    613     )
+    615 bsz, q_len, _ = hidden_states.size()
+--> 617 query_states = self.q_proj(hidden_states)
+    618 key_states = self.k_proj(hidden_states)
+    619 value_states = self.v_proj(hidden_states)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/nn/modules.py:557, in Linear4bit.forward(self, x)
+    554 bias = None if self.bias is None else self.bias.to(self.compute_dtype)
+    555 weight = self.weight if getattr(quant_state, "packing_format_for_cpu", False) else self.weight.t()
+--> 557 return bnb.matmul_4bit(x, weight, bias=bias, quant_state=quant_state).to(inp_dtype)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py:401, in matmul_4bit(A, B, quant_state, out, bias)
+    399         return out
+    400 else:
+--> 401     return MatMul4Bit.apply(A, B, out, bias, quant_state)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/autograd/function.py:575, in Function.apply(cls, *args, **kwargs)
+    572 if not torch._C._are_functorch_transforms_active():
+    573     # See NOTE: [functorch vjp and autograd interaction]
+    574     args = _functorch.utils.unwrap_dead_wrappers(args)
+--> 575     return super().apply(*args, **kwargs)  # type: ignore[misc]
+    577 if not is_setup_ctx_defined:
+    578     raise RuntimeError(
+    579         "In order to use an autograd.Function with functorch transforms "
+    580         "(vmap, grad, jvp, jacrev, ...), it must override the setup_context "
+    581         "staticmethod. For more details, please see "
+    582         "https://pytorch.org/docs/main/notes/extending.func.html"
+    583     )
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py:315, in MatMul4Bit.forward(ctx, A, B, out, bias, quant_state)
+    311         return torch.empty(A.shape[:-1] + B_shape[:1], dtype=A.dtype, device=A.device)
+    313 # 1. Dequantize
+    314 # 2. MatmulnN
+--> 315 output = torch.nn.functional.linear(A, F.dequantize_4bit(B, quant_state).to(A.dtype).t(), bias)
+    317 # 3. Save state
+    318 ctx.state = quant_state
+
+KeyboardInterrupt:
+
+In [3]:
+
+In [3]: ask("Summarize treatment for pulmonary embolism.", max_new_tokens=200)
+^C---------------------------------------------------------------------------
+KeyboardInterrupt                         Traceback (most recent call last)
+Cell In[3], line 1
+----> 1 ask("Summarize treatment for pulmonary embolism.", max_new_tokens=200)
+
+Cell In[1], line 43, in ask(prompt, system, max_new_tokens, temperature, top_p)
+     36 input_ids = tokenizer.apply_chat_template(
+     37     messages,
+     38     tokenize=True,
+     39     add_generation_prompt=True,
+     40     return_tensors="pt"
+     41 ).to("cuda:1")
+     42 with torch.no_grad():
+---> 43     outputs = model.generate(
+     44         input_ids,
+     45         max_new_tokens=max_new_tokens,
+     46         do_sample=True,
+     47         temperature=temperature,
+     48         top_p=top_p,
+     49         repetition_penalty=1.1,
+     50         pad_token_id=tokenizer.eos_token_id,
+     51         eos_token_id=tokenizer.eos_token_id,
+     52     )
+     53 generated = outputs[0][input_ids.shape[-1]:]
+     54 print(tokenizer.decode(generated, skip_special_tokens=True))
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/utils/_contextlib.py:116, in context_decorator.<locals>.decorate_context(*args, **kwargs)
+    113 @functools.wraps(func)
+    114 def decorate_context(*args, **kwargs):
+    115     with ctx_factory():
+--> 116         return func(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/generation/utils.py:2024, in GenerationMixin.generate(self, inputs, generation_config, logits_processor, stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)
+   2016     input_ids, model_kwargs = self._expand_inputs_for_generation(
+   2017         input_ids=input_ids,
+   2018         expand_size=generation_config.num_return_sequences,
+   2019         is_encoder_decoder=self.config.is_encoder_decoder,
+   2020         **model_kwargs,
+   2021     )
+   2023     # 13. run sample (it degenerates to greedy search when `generation_config.do_sample=False`)
+-> 2024     result = self._sample(
+   2025         input_ids,
+   2026         logits_processor=prepared_logits_processor,
+   2027         logits_warper=prepared_logits_warper,
+   2028         stopping_criteria=prepared_stopping_criteria,
+   2029         generation_config=generation_config,
+   2030         synced_gpus=synced_gpus,
+   2031         streamer=streamer,
+   2032         **model_kwargs,
+   2033     )
+   2035 elif generation_mode in (GenerationMode.BEAM_SAMPLE, GenerationMode.BEAM_SEARCH):
+   2036     # 11. prepare logits warper
+   2037     prepared_logits_warper = (
+   2038         self._get_logits_warper(generation_config, device=input_ids.device)
+   2039         if generation_config.do_sample
+   2040         else None
+   2041     )
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/generation/utils.py:2982, in GenerationMixin._sample(self, input_ids, logits_processor, stopping_criteria, generation_config, synced_gpus, streamer, logits_warper, **model_kwargs)
+   2979 model_inputs.update({"output_hidden_states": output_hidden_states} if output_hidden_states else {})
+   2981 # forward pass to get next token
+-> 2982 outputs = self(**model_inputs, return_dict=True)
+   2984 if synced_gpus and this_peer_finished:
+   2985     continue  # don't waste resources running the code we don't need
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:1189, in LlamaForCausalLM.forward(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, labels, use_cache, output_attentions, output_hidden_states, return_dict, cache_position)
+   1186 return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+   1188 # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
+-> 1189 outputs = self.model(
+   1190     input_ids=input_ids,
+   1191     attention_mask=attention_mask,
+   1192     position_ids=position_ids,
+   1193     past_key_values=past_key_values,
+   1194     inputs_embeds=inputs_embeds,
+   1195     use_cache=use_cache,
+   1196     output_attentions=output_attentions,
+   1197     output_hidden_states=output_hidden_states,
+   1198     return_dict=return_dict,
+   1199     cache_position=cache_position,
+   1200 )
+   1202 hidden_states = outputs[0]
+   1203 if self.config.pretraining_tp > 1:
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:1001, in LlamaModel.forward(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, use_cache, output_attentions, output_hidden_states, return_dict, cache_position)
+    989     layer_outputs = self._gradient_checkpointing_func(
+    990         decoder_layer.__call__,
+    991         hidden_states,
+   (...)
+    998         position_embeddings,
+    999     )
+   1000 else:
+-> 1001     layer_outputs = decoder_layer(
+   1002         hidden_states,
+   1003         attention_mask=causal_mask,
+   1004         position_ids=position_ids,
+   1005         past_key_value=past_key_values,
+   1006         output_attentions=output_attentions,
+   1007         use_cache=use_cache,
+   1008         cache_position=cache_position,
+   1009         position_embeddings=position_embeddings,
+   1010     )
+   1012 hidden_states = layer_outputs[0]
+   1014 if use_cache:
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:734, in LlamaDecoderLayer.forward(self, hidden_states, attention_mask, position_ids, past_key_value, output_attentions, use_cache, cache_position, position_embeddings, **kwargs)
+    731 hidden_states = self.input_layernorm(hidden_states)
+    733 # Self Attention
+--> 734 hidden_states, self_attn_weights, present_key_value = self.self_attn(
+    735     hidden_states=hidden_states,
+    736     attention_mask=attention_mask,
+    737     position_ids=position_ids,
+    738     past_key_value=past_key_value,
+    739     output_attentions=output_attentions,
+    740     use_cache=use_cache,
+    741     cache_position=cache_position,
+    742     position_embeddings=position_embeddings,
+    743     **kwargs,
+    744 )
+    745 hidden_states = residual + hidden_states
+    747 # Fully Connected
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:617, in LlamaSdpaAttention.forward(self, hidden_states, attention_mask, position_ids, past_key_value, output_attentions, use_cache, cache_position, position_embeddings, **kwargs)
+    604     return super().forward(
+    605         hidden_states=hidden_states,
+    606         attention_mask=attention_mask,
+   (...)
+    612         position_embeddings=position_embeddings,
+    613     )
+    615 bsz, q_len, _ = hidden_states.size()
+--> 617 query_states = self.q_proj(hidden_states)
+    618 key_states = self.k_proj(hidden_states)
+    619 value_states = self.v_proj(hidden_states)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/nn/modules.py:552, in Linear4bit.forward(self, x)
+    550 inp_dtype = x.dtype
+    551 if self.compute_dtype is not None:
+--> 552     x = x.to(self.compute_dtype)
+    554 bias = None if self.bias is None else self.bias.to(self.compute_dtype)
+    555 weight = self.weight if getattr(quant_state, "packing_format_for_cpu", False) else self.weight.t()
+
+KeyboardInterrupt:
+
+In [4]: ask("Summarize treatment for pulmonary embolism.", max_new_tokens=100)
+Treatment for pulmonary embolism typically involves anticoagulant medication to prevent further clot formation and promote natural dissolving of the existing clot. In some cases, thrombolytic therapy may be used to dissolve the clot more quickly. Rarely, surgery or other interventions may be necessary if symptoms are severe or do not improve with medication.
+
+   ...:     ).to("cuda:1")
+   ...:
+   ...:     prompt_tokens = input_ids.shape[-1]
+   ...:
+   ...:     # Measure prefill
+   ...:     prefill_start = time.time()
+   ...:     with torch.no_grad():
+   ...:         outputs = model.generate(
+   ...:             input_ids,
+   ...:             max_new_tokens=max_new_tokens,
+   ...:             do_sample=True,
+   ...:             temperature=temperature,
+   ...:             top_p=top_p,
+   ...:             repetition_penalty=1.1,
+   ...:             pad_token_id=tokenizer.eos_token_id,
+   ...:             eos_token_id=tokenizer.eos_token_id,
+   ...:         )
+   ...:     total_time = time.time() - prefill_start
+   ...:
+   ...:     generated = outputs[0][input_ids.shape[-1]:]
+   ...:     output_tokens = len(generated)
+   ...:     tokens_per_sec = output_tokens / total_time
+   ...:
+   ...:     print(f"\n📊 TIMING STATS")
+   ...:     print(f"  Prompt tokens    : {prompt_tokens}")
+   ...:     print(f"  Generated tokens : {output_tokens}")
+   ...:     print(f"  Total time       : {total_time:.2f}s")
+   ...:     print(f"  Speed            : {tokens_per_sec:.2f} tokens/sec")
+   ...:     print(f"  Est. for 100 tok : {100/tokens_per_sec:.1f}s")
+   ...:     print(f"  Est. for 500 tok : {500/tokens_per_sec:.1f}s")
+   ...:     print(f"\n=== OUTPUT ===\n")
+   ...:     print(tokenizer.decode(generated, skip_special_tokens=True))
+   ...:
+
+In [6]: # More detail
+   ...: ask("Summarize treatment for pulmonary embolism.", max_new_tokens=300)
+   ...:
+   ...: # Test clinical reasoning
+   ...: ask("A 65 year old patient presents with sudden onset dyspnea, tachycardia, and low O2 saturation after a long flight. What i
+   ...: s your differential diagnosis and workup?")
+   ...:
+   ...: # Test if it handles drug names correctly
+   ...: ask("What is the mechanism of action of rivaroxaban and when would you prefer it over heparin in PE?")
+   ...:
+   ...: # Test structured output
+   ...: ask("Give me a treatment protocol for massive PE in a step by step format.")
+
+
+📊 TIMING STATS
+  Prompt tokens    : 33
+  Generated tokens : 79
+  Total time       : 74.78s
+  Speed            : 1.06 tokens/sec
+  Est. for 100 tok : 94.7s
+  Est. for 500 tok : 473.3s
+
+=== OUTPUT ===
+
+The treatment for a pulmonary embolism typically involves anticoagulant medication to prevent further clot formation and promote natural dissolving of the existing clot. In severe cases, thrombolytic therapy may be used to dissolve the clot quickly. Rarely, surgical removal of the clot or placement of a filter in the main vein to catch clots before they reach the lungs may be necessary.
+^C---------------------------------------------------------------------------
+KeyboardInterrupt                         Traceback (most recent call last)
+Cell In[6], line 5
+      2 ask("Summarize treatment for pulmonary embolism.", max_new_tokens=300)
+      4 # Test clinical reasoning
+----> 5 ask("A 65 year old patient presents with sudden onset dyspnea, tachycardia, and low O2 saturation after a long flight. What is your differential diagnosis and workup?")
+      7 # Test if it handles drug names correctly
+      8 ask("What is the mechanism of action of rivaroxaban and when would you prefer it over heparin in PE?")
+
+Cell In[5], line 20, in ask(prompt, system, max_new_tokens, temperature, top_p)
+     18 prefill_start = time.time()
+     19 with torch.no_grad():
+---> 20     outputs = model.generate(
+     21         input_ids,
+     22         max_new_tokens=max_new_tokens,
+     23         do_sample=True,
+     24         temperature=temperature,
+     25         top_p=top_p,
+     26         repetition_penalty=1.1,
+     27         pad_token_id=tokenizer.eos_token_id,
+     28         eos_token_id=tokenizer.eos_token_id,
+     29     )
+     30 total_time = time.time() - prefill_start
+     32 generated = outputs[0][input_ids.shape[-1]:]
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/utils/_contextlib.py:116, in context_decorator.<locals>.decorate_context(*args, **kwargs)
+    113 @functools.wraps(func)
+    114 def decorate_context(*args, **kwargs):
+    115     with ctx_factory():
+--> 116         return func(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/generation/utils.py:2024, in GenerationMixin.generate(self, inputs, generation_config, logits_processor, stopping_criteria, prefix_allowed_tokens_fn, synced_gpus, assistant_model, streamer, negative_prompt_ids, negative_prompt_attention_mask, **kwargs)
+   2016     input_ids, model_kwargs = self._expand_inputs_for_generation(
+   2017         input_ids=input_ids,
+   2018         expand_size=generation_config.num_return_sequences,
+   2019         is_encoder_decoder=self.config.is_encoder_decoder,
+   2020         **model_kwargs,
+   2021     )
+   2023     # 13. run sample (it degenerates to greedy search when `generation_config.do_sample=False`)
+-> 2024     result = self._sample(
+   2025         input_ids,
+   2026         logits_processor=prepared_logits_processor,
+   2027         logits_warper=prepared_logits_warper,
+   2028         stopping_criteria=prepared_stopping_criteria,
+   2029         generation_config=generation_config,
+   2030         synced_gpus=synced_gpus,
+   2031         streamer=streamer,
+   2032         **model_kwargs,
+   2033     )
+   2035 elif generation_mode in (GenerationMode.BEAM_SAMPLE, GenerationMode.BEAM_SEARCH):
+   2036     # 11. prepare logits warper
+   2037     prepared_logits_warper = (
+   2038         self._get_logits_warper(generation_config, device=input_ids.device)
+   2039         if generation_config.do_sample
+   2040         else None
+   2041     )
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/generation/utils.py:2982, in GenerationMixin._sample(self, input_ids, logits_processor, stopping_criteria, generation_config, synced_gpus, streamer, logits_warper, **model_kwargs)
+   2979 model_inputs.update({"output_hidden_states": output_hidden_states} if output_hidden_states else {})
+   2981 # forward pass to get next token
+-> 2982 outputs = self(**model_inputs, return_dict=True)
+   2984 if synced_gpus and this_peer_finished:
+   2985     continue  # don't waste resources running the code we don't need
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:1189, in LlamaForCausalLM.forward(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, labels, use_cache, output_attentions, output_hidden_states, return_dict, cache_position)
+   1186 return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+   1188 # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
+-> 1189 outputs = self.model(
+   1190     input_ids=input_ids,
+   1191     attention_mask=attention_mask,
+   1192     position_ids=position_ids,
+   1193     past_key_values=past_key_values,
+   1194     inputs_embeds=inputs_embeds,
+   1195     use_cache=use_cache,
+   1196     output_attentions=output_attentions,
+   1197     output_hidden_states=output_hidden_states,
+   1198     return_dict=return_dict,
+   1199     cache_position=cache_position,
+   1200 )
+   1202 hidden_states = outputs[0]
+   1203 if self.config.pretraining_tp > 1:
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:1001, in LlamaModel.forward(self, input_ids, attention_mask, position_ids, past_key_values, inputs_embeds, use_cache, output_attentions, output_hidden_states, return_dict, cache_position)
+    989     layer_outputs = self._gradient_checkpointing_func(
+    990         decoder_layer.__call__,
+    991         hidden_states,
+   (...)
+    998         position_embeddings,
+    999     )
+   1000 else:
+-> 1001     layer_outputs = decoder_layer(
+   1002         hidden_states,
+   1003         attention_mask=causal_mask,
+   1004         position_ids=position_ids,
+   1005         past_key_value=past_key_values,
+   1006         output_attentions=output_attentions,
+   1007         use_cache=use_cache,
+   1008         cache_position=cache_position,
+   1009         position_embeddings=position_embeddings,
+   1010     )
+   1012 hidden_states = layer_outputs[0]
+   1014 if use_cache:
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:750, in LlamaDecoderLayer.forward(self, hidden_states, attention_mask, position_ids, past_key_value, output_attentions, use_cache, cache_position, position_embeddings, **kwargs)
+    748 residual = hidden_states
+    749 hidden_states = self.post_attention_layernorm(hidden_states)
+--> 750 hidden_states = self.mlp(hidden_states)
+    751 hidden_states = residual + hidden_states
+    753 outputs = (hidden_states,)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py:309, in LlamaMLP.forward(self, x)
+    307     down_proj = sum(down_proj)
+    308 else:
+--> 309     down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
+    311 return down_proj
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1739, in Module._wrapped_call_impl(self, *args, **kwargs)
+   1737     return self._compiled_call_impl(*args, **kwargs)  # type: ignore[misc]
+   1738 else:
+-> 1739     return self._call_impl(*args, **kwargs)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/nn/modules/module.py:1750, in Module._call_impl(self, *args, **kwargs)
+   1745 # If we don't have any hooks, we want to skip the rest of the logic in
+   1746 # this function, and just call forward.
+   1747 if not (self._backward_hooks or self._backward_pre_hooks or self._forward_hooks or self._forward_pre_hooks
+   1748         or _global_backward_pre_hooks or _global_backward_hooks
+   1749         or _global_forward_hooks or _global_forward_pre_hooks):
+-> 1750     return forward_call(*args, **kwargs)
+   1752 result = None
+   1753 called_always_called_hooks = set()
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/accelerate/hooks.py:169, in add_hook_to_module.<locals>.new_forward(module, *args, **kwargs)
+    167         output = module._old_forward(*args, **kwargs)
+    168 else:
+--> 169     output = module._old_forward(*args, **kwargs)
+    170 return module._hf_hook.post_forward(module, output)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/nn/modules.py:557, in Linear4bit.forward(self, x)
+    554 bias = None if self.bias is None else self.bias.to(self.compute_dtype)
+    555 weight = self.weight if getattr(quant_state, "packing_format_for_cpu", False) else self.weight.t()
+--> 557 return bnb.matmul_4bit(x, weight, bias=bias, quant_state=quant_state).to(inp_dtype)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py:401, in matmul_4bit(A, B, quant_state, out, bias)
+    399         return out
+    400 else:
+--> 401     return MatMul4Bit.apply(A, B, out, bias, quant_state)
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/torch/autograd/function.py:575, in Function.apply(cls, *args, **kwargs)
+    572 if not torch._C._are_functorch_transforms_active():
+    573     # See NOTE: [functorch vjp and autograd interaction]
+    574     args = _functorch.utils.unwrap_dead_wrappers(args)
+--> 575     return super().apply(*args, **kwargs)  # type: ignore[misc]
+    577 if not is_setup_ctx_defined:
+    578     raise RuntimeError(
+    579         "In order to use an autograd.Function with functorch transforms "
+    580         "(vmap, grad, jvp, jacrev, ...), it must override the setup_context "
+    581         "staticmethod. For more details, please see "
+    582         "https://pytorch.org/docs/main/notes/extending.func.html"
+    583     )
+
+File /media/rvcse22/CSERV/medlm/qlora_env/lib/python3.10/site-packages/bitsandbytes/autograd/_functions.py:315, in MatMul4Bit.forward(ctx, A, B, out, bias, quant_state)
+    311         return torch.empty(A.shape[:-1] + B_shape[:1], dtype=A.dtype, device=A.device)
+    313 # 1. Dequantize
+    314 # 2. MatmulnN
+--> 315 output = torch.nn.functional.linear(A, F.dequantize_4bit(B, quant_state).to(A.dtype).t(), bias)
+    317 # 3. Save state
+    318 ctx.state = quant_state
+
+KeyboardInterrupt:
+
+In [7]: os.environ["NCCL_P2P_DISABLE"] = "1"
+   ...: os.environ["NCCL_IB_DISABLE"] = "1"
+   ...: os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+   ...: os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+In [8]: def ask_fast(prompt, system="You are an expert medical AI assistant.", max_new_tokens=200):
+   ...:     messages = [
+   ...:         {"role": "system", "content": system},
+   ...:         {"role": "user", "content": prompt}
+   ...:     ]
+   ...:     input_ids = tokenizer.apply_chat_template(
+   ...:         messages,
+   ...:         tokenize=True,
+   ...:         add_generation_prompt=True,
+   ...:         return_tensors="pt"
+   ...:     ).to("cuda:1")
+   ...:
+   ...:     import time
+   ...:     start = time.time()
+   ...:     with torch.no_grad():
+   ...:         outputs = model.generate(
+   ...:             input_ids,
+   ...:             max_new_tokens=max_new_tokens,
+   ...:             do_sample=False,        # greedy — faster than sampling
+   ...:             repetition_penalty=1.1,
+   ...:             pad_token_id=tokenizer.eos_token_id,
+   ...:             eos_token_id=tokenizer.eos_token_id,
+   ...:         )
+   ...:     elapsed = time.time() - start
+   ...:     generated = outputs[0][input_ids.shape[-1]:]
+   ...:     print(f"⏱ {elapsed:.1f}s | {len(generated)} tokens | {len(generated)/elapsed:.2f} tok/s\n")
+   ...:     print(tokenizer.decode(generated, skip_special_tokens=True))
+   ...:
+
+In [9]: ask_fast("Summarize treatment for pulmonary embolism.")
+⏱ 155.8s | 129 tokens | 0.83 tok/s
+
+The treatment for pulmonary embolism involves anticoagulation therapy to prevent further clot formation and promote natural dissolution of the existing clot. This is typically achieved with heparin or low molecular weight heparin, followed by oral anticoagulants like warfarin. In cases where there is hemodynamic instability or massive pulmonary embolism, more aggressive interventions such as thrombolytic therapy (e.g., alteplase) may be considered to dissolve the clot rapidly. Rarely, surgical embolectomy might be necessary if other treatments fail. Chronic complications can lead to pulmonary hypertension, which may require specific medications.
+
+In [10]:
