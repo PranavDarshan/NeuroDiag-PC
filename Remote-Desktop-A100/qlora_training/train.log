@@ -1,0 +1,109 @@
+csegpuserver@rvcse:/media/rvcse22/CSERV/medlm$ cat train.log
+2026-02-28 16:33:30,690 | INFO | ======================================================================
+2026-02-28 16:33:30,690 | INFO |   QLoRA Fine-tuning — OpenBioLLM-70B — MedCaseReason QA
+2026-02-28 16:33:30,690 | INFO |   Started      : 2026-02-28 16:33:30
+2026-02-28 16:33:30,690 | INFO |   Rows already : 0
+2026-02-28 16:33:30,690 | INFO |   Rows this run: 0 → 2000
+2026-02-28 16:33:30,690 | INFO |   LoRA         : r=16, alpha=32
+2026-02-28 16:33:30,690 | INFO | ======================================================================
+2026-02-28 16:33:30,690 | INFO | Loading dataset: /media/rvcse22/CSERV/medlm/medcasereasoning_core.csv
+2026-02-28 16:33:32,688 | INFO | Full dataset: (14489, 11)
+2026-02-28 16:33:32,707 | INFO | Training on rows 0 to 2000 (2000 new rows)
+2026-02-28 16:33:32,707 | INFO | Loading tokenizer...
+2026-02-28 16:33:33,139 | INFO | Tokenizing 2000 samples...
+2026-02-28 16:33:35,772 | INFO | Dataset ready: 2000 samples (0 skipped)
+2026-02-28 16:33:35,775 | INFO | Total steps this run : 125
+2026-02-28 16:33:35,775 | INFO | Effective batch size : 16
+2026-02-28 16:33:35,775 | INFO | Loading base model in 4-bit NF4...
+2026-02-28 16:33:35,775 | INFO | [GPU] Before model load
+2026-02-28 16:33:36,081 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 0.92GB / 42.40GB (2.2%)
+2026-02-28 16:33:36,256 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 0.46GB / 42.40GB (1.1%)
+2026-02-28 16:34:04,750 | INFO | ======================================================================
+2026-02-28 16:34:04,750 | INFO |   QLoRA Fine-tuning — OpenBioLLM-70B — MedCaseReason QA
+2026-02-28 16:34:04,750 | INFO |   Started      : 2026-02-28 16:34:04
+2026-02-28 16:34:04,750 | INFO |   Rows already : 0
+2026-02-28 16:34:04,750 | INFO |   Rows this run: 0 → 2000
+2026-02-28 16:34:04,750 | INFO |   LoRA         : r=16, alpha=32
+2026-02-28 16:34:04,750 | INFO | ======================================================================
+2026-02-28 16:34:04,750 | INFO | Loading dataset: /media/rvcse22/CSERV/medlm/medcasereasoning_core.csv
+2026-02-28 16:34:06,637 | INFO | Full dataset: (14489, 11)
+2026-02-28 16:34:06,644 | INFO | Training on rows 0 to 2000 (2000 new rows)
+2026-02-28 16:34:06,644 | INFO | Loading tokenizer...
+2026-02-28 16:34:06,935 | INFO | Tokenizing 2000 samples...
+2026-02-28 16:34:09,572 | INFO | Dataset ready: 2000 samples (0 skipped)
+2026-02-28 16:34:09,572 | INFO | Total steps this run : 125
+2026-02-28 16:34:09,572 | INFO | Effective batch size : 16
+2026-02-28 16:34:09,573 | INFO | Loading base model in 4-bit NF4...
+2026-02-28 16:34:09,573 | INFO | [GPU] Before model load
+2026-02-28 16:34:09,864 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 0.92GB / 42.40GB (2.2%)
+2026-02-28 16:34:10,037 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 0.46GB / 42.40GB (1.1%)
+2026-02-28 16:40:21,971 | INFO | [GPU] After model load
+2026-02-28 16:40:21,985 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 17.84GB / 42.40GB (42.1%)
+2026-02-28 16:40:21,985 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 23.69GB / 42.40GB (55.9%)
+2026-02-28 16:40:22,049 | INFO | No existing adapter found — initializing fresh LoRA weights
+2026-02-28 16:40:24,995 | INFO | ======================================================================
+2026-02-28 16:40:24,995 | INFO | Training started...
+2026-02-28 16:40:24,995 | INFO | ======================================================================
+2026-02-28 16:40:24,996 | INFO | [GPU] Before training
+2026-02-28 16:40:24,996 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 22.22GB / 42.40GB (52.4%)
+2026-02-28 16:40:24,996 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 28.11GB / 42.40GB (66.3%)
+2026-02-28 20:45:27,110 | INFO | Saving LoRA adapter to /media/rvcse22/CSERV/medlm/qlora-medical/adapter...
+2026-02-28 20:45:28,217 | INFO | Adapter saved successfully.
+2026-02-28 20:45:28,217 | INFO | NOTE: To merge adapter into full model for inference, run:
+2026-02-28 20:45:28,217 | INFO |   from peft import PeftModel
+2026-02-28 20:45:28,217 | INFO |   model = PeftModel.from_pretrained(base_model, adapter_dir)
+2026-02-28 20:45:28,217 | INFO |   model = model.merge_and_unload()
+2026-02-28 20:45:28,254 | INFO | Progress saved: 2000 rows trained total
+2026-02-28 20:45:28,254 | INFO | ======================================================================
+2026-02-28 20:45:28,254 | INFO | Run complete! Elapsed: 4.19 hours
+2026-02-28 20:45:28,254 | INFO | Rows trained so far : 2000 / 14489
+2026-02-28 20:45:28,254 | INFO | To continue         : increase TRAIN_SUBSET and re-run
+2026-02-28 20:45:28,254 | INFO | Loss log saved to   : /media/rvcse22/CSERV/medlm/loss_log.csv
+2026-02-28 20:45:28,254 | INFO | ======================================================================
+2026-02-28 20:45:28,254 | INFO | [GPU] After training
+2026-02-28 20:45:28,255 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 24.74GB / 42.40GB (58.4%)
+2026-02-28 20:45:28,255 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 33.28GB / 42.40GB (78.5%)
+2026-02-28 21:17:05,664 | INFO | ======================================================================
+2026-02-28 21:17:05,664 | INFO |   QLoRA Fine-tuning — OpenBioLLM-70B — MedCaseReason QA
+2026-02-28 21:17:05,664 | INFO |   Started      : 2026-02-28 21:17:05
+2026-02-28 21:17:05,664 | INFO |   Rows already : 2000
+2026-02-28 21:17:05,664 | INFO |   Rows this run: 2000 → 4000
+2026-02-28 21:17:05,664 | INFO |   LoRA         : r=16, alpha=32
+2026-02-28 21:17:05,665 | INFO | ======================================================================
+2026-02-28 21:17:05,665 | INFO | Loading dataset: /media/rvcse22/CSERV/medlm/medcasereasoning_core.csv
+2026-02-28 21:17:07,608 | INFO | Full dataset: (14489, 11)
+2026-02-28 21:17:07,615 | INFO | Training on rows 2000 to 4000 (2000 new rows)
+2026-02-28 21:17:07,615 | INFO | Loading tokenizer...
+2026-02-28 21:17:08,005 | INFO | Tokenizing 2000 samples...
+2026-02-28 21:17:10,678 | INFO | Dataset ready: 2000 samples (0 skipped)
+2026-02-28 21:17:10,681 | INFO | Total steps this run : 125
+2026-02-28 21:17:10,681 | INFO | Effective batch size : 16
+2026-02-28 21:17:10,681 | INFO | Loading base model in 4-bit NF4...
+2026-02-28 21:17:10,681 | INFO | [GPU] Before model load
+2026-02-28 21:17:10,983 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 1.04GB / 42.40GB (2.4%)
+2026-02-28 21:17:11,169 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 0.48GB / 42.40GB (1.1%)
+2026-02-28 21:22:07,240 | INFO | [GPU] After model load
+2026-02-28 21:22:07,267 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 17.96GB / 42.40GB (42.4%)
+2026-02-28 21:22:07,267 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 23.71GB / 42.40GB (55.9%)
+2026-02-28 21:22:07,437 | INFO | Loading existing LoRA adapter from /media/rvcse22/CSERV/medlm/qlora-medical/adapter...
+2026-02-28 21:22:12,957 | INFO | Adapter loaded — continuing from previous run
+2026-02-28 21:22:12,975 | INFO | No optimizer state found — starting fresh optimizer
+2026-02-28 21:22:12,995 | INFO | Found checkpoint: /media/rvcse22/CSERV/medlm/qlora-medical/checkpoint-125
+2026-02-28 21:22:13,109 | INFO | ======================================================================
+2026-02-28 21:22:13,109 | INFO | Training started...
+2026-02-28 21:22:13,109 | INFO | ======================================================================
+2026-02-28 21:22:13,110 | INFO | [GPU] Before training
+2026-02-28 21:22:13,110 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 22.72GB / 42.40GB (53.6%)
+2026-02-28 21:22:13,110 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 28.14GB / 42.40GB (66.4%)
+2026-02-28 21:22:20,868 | INFO | Saving LoRA adapter to /media/rvcse22/CSERV/medlm/qlora-medical/adapter...
+2026-02-28 21:22:25,968 | INFO | Progress saved: 4000 rows trained total
+2026-02-28 21:22:25,968 | INFO | ======================================================================
+2026-02-28 21:22:25,968 | INFO | Run complete! Elapsed : 0.09 hours
+2026-02-28 21:22:25,968 | INFO | Rows trained so far  : 4000 / 14489
+2026-02-28 21:22:25,969 | INFO | Remaining rows       : 10489
+2026-02-28 21:22:25,969 | INFO | Next run             : set TRAIN_SUBSET = 6000
+2026-02-28 21:22:25,969 | INFO | Loss log             : /media/rvcse22/CSERV/medlm/loss_log.csv
+2026-02-28 21:22:25,969 | INFO | ======================================================================
+2026-02-28 21:22:25,969 | INFO | [GPU] After training
+2026-02-28 21:22:25,969 | INFO |   cuda:0 NVIDIA A100-PCIE-40GB | Used: 20.48GB / 42.40GB (48.3%)
+2026-02-28 21:22:25,969 | INFO |   cuda:1 NVIDIA A100-PCIE-40GB | Used: 26.33GB / 42.40GB (62.1%)
